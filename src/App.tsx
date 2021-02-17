@@ -1,25 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import Search from './components/Search';
+import Posts from './components/Posts';
+import axios from './service/axios';
+import { useDispatch } from 'react-redux';
 
 function App() {
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setIsLoading(true);
+      const {data} = await axios('posts');
+      dispatch({ type: 'SET_POSTS', posts: data})
+      setIsLoading(false);
+    })()
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Search/>
+      {
+        !isLoading ? <Posts/> : 'Загрузка...'
+      }
+    </>
   );
 }
 
